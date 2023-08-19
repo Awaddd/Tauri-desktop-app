@@ -26,20 +26,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
 }
 
 #[tauri::command]
-async fn get_books() -> Result<Vec<String>, String> {
-  println!("Called from JavaScript Land");
-
+async fn get_books() -> Result<Vec<Book>, String> {
   let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
 
   let books = BookService::read_all(&pool).await;
 
   match books {
     Ok(arr) => {
-      let mut b = vec![];
+      let mut b: Vec<Book> = vec![];
 
       for book in arr {
-        println!("{} by {}, ISBN: {}", book.title, book.author, book.isbn);
-        b.push(String::from(format!("{} by {}, ISBN: {}", book.title, book.author, book.isbn)));
+        b.push(book);
       }
 
       Ok(b)

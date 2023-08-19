@@ -1,9 +1,17 @@
+use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Book {
   pub title: String,
   pub author: String,
   pub isbn: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BookPartial {
+  pub title: String,
+  pub author: String,
 }
 
 impl Book {
