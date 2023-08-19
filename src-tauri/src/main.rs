@@ -3,6 +3,11 @@
 
 
 mod database;
+
+mod data {
+  pub mod books;
+}
+
 mod services {
   pub mod books;
 }
@@ -13,9 +18,7 @@ mod models {
 
 use std::error::Error;
 
-use models::book::BookPartial;
-
-use crate::{database::start_db, services::books::BookService, models::book::Book};
+use crate::{services::books::BookService, models::book::{Book, BookPartial}};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -29,32 +32,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
 #[tauri::command]
 async fn get_books() -> Result<Vec<Book>, String> {
-  let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
-
-  let books = BookService::read_all(&pool).await;
-
-  match books {
-    Ok(arr) => {
-      let mut b: Vec<Book> = vec![];
-
-      for book in arr {
-        b.push(book);
-      }
-
-      Ok(b)
-    },
-    Err(_) => Err(String::from("Failed to fetch books"))
-  }
+  BookService::get_books().await
 }
 
 #[tauri::command]
 async fn add_book(book: BookPartial) -> Result<(), String> {
-  let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
-
-  let new_book = Book::new(book);
-
-  match BookService::create(&new_book, &pool).await {
-    Ok(_) => Ok(()),
-    Err(_) => Err(String::from("Could not add book"))
-  }
+  BookService::add_book(book).await
 }

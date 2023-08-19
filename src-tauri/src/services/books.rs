@@ -1,67 +1,35 @@
-use std::error::Error;
-use sqlx::Row;
-use crate::models::book::Book;
+use crate::{models::book::{Book, BookPartial}, data::books::BookTable, database::start_db};
 
 pub struct BookService {}
 
 impl BookService {
-  pub async fn read(pool: &sqlx::PgPool) -> Result<Book, Box<dyn Error>> {
-    let query = sqlx::query("SELECT title, author, isbn FROM book");
-    
-    let row = query.fetch_one(pool).await?;
+  pub async fn get_books() -> Result<Vec<Book>, String> {
+    let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
   
-    let book = Book {
-      title: row.get("title"),
-      author: row.get("author"),
-      isbn: row.get("isbn"),
-    };
+    let books = BookTable::read_all(&pool).await;
   
-    Ok(book)
-  }
+    match books {
+      Ok(arr) => {
+        let mut b: Vec<Book> = vec![];
   
-  pub async fn read_all(pool: &sqlx::PgPool) -> Result<Vec<Book>, Box<dyn Error>> {
-    let query = sqlx::query("SELECT title, author, isbn FROM book");
+        for book in arr {
+          b.push(book);
+        }
   
-    let rows = query.fetch_all(pool).await?;
-  
-    let mut books = vec![];
-  
-    for row in rows.iter() {
-      let book = Book {
-        title: row.get("title"),
-        author: row.get("author"),
-        isbn: row.get("isbn"),
-      };
-  
-      books.push(book);
+        Ok(b)
+      },
+      Err(_) => Err(String::from("Failed to fetch books"))
     }
-  
-    Ok(books)
-  }
-
-  pub async fn create(book: &Book, pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
-    let query = "INSERT INTO book (title, author, isbn) VALUES ($1, $2, $3)";
-  
-    sqlx::query(query)
-      .bind(&book.title)
-      .bind(&book.author)
-      .bind(&book.isbn)
-      .execute(pool)
-      .await?;
-  
-    Ok(())
   }
   
-  pub async fn update(book: &Book, pool: &sqlx::PgPool) -> Result<(), Box<dyn Error>> {
-    let query = "UPDATE book SET title = $1, author = $2 WHERE isbn = $3";
+  pub async fn add_book(book: BookPartial) -> Result<(), String> {
+    let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
   
-    sqlx::query(query)
-      .bind(&book.title)
-      .bind(&book.author)
-      .bind(&book.isbn)
-      .execute(pool)
-      .await?;
+    let new_book = Book::new(book);
   
-    Ok(())
+    match BookTable::create(&new_book, &pool).await {
+      Ok(_) => Ok(()),
+      Err(_) => Err(String::from("Could not add book"))
+    }
   }
 }
