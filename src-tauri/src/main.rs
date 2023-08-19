@@ -51,7 +51,7 @@ async fn get_books() -> Result<Vec<Book>, String> {
 async fn add_book(book: BookPartial) -> Result<(), String> {
   let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
 
-  let new_book = Book::new(book.title, book.author);
+  let new_book = Book::new(book);
 
   match BookService::create(&new_book, &pool).await {
     Ok(_) => Ok(()),

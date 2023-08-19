@@ -15,10 +15,10 @@ pub struct BookPartial {
 }
 
 impl Book {
-  pub fn new(title: impl Into<String>, author: impl Into<String>) -> Book {
+  pub fn new(book: BookPartial) -> Book {
     Book {
-      title: title.into(),
-      author: author.into(),
+      title: book.title,
+      author: book.author,
       isbn: Uuid::new_v4().to_string(),
     }
   }
