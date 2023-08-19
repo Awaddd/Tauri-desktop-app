@@ -3,7 +3,7 @@ import { guard } from "../lib/utils/helpers";
 import type { Result } from "../lib/types/global";
 
 export const getBooks = async (): Promise<Result<Book[]>> => {
-  return guard<Book[]>(async () => (await invoke("get_books")) as Book[]);
+  return guard(async () => await invoke("get_books"));
 };
 
 export const addBook = async (
