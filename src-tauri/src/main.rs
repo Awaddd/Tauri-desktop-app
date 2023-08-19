@@ -14,7 +14,6 @@ mod models {
 use std::error::Error;
 
 use crate::{database::start_db, services::books::BookService, models::book::Book};
-use uuid::Uuid;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -53,11 +52,7 @@ async fn get_books() -> Result<Vec<String>, String> {
 async fn add_book(title: &str, author: &str) -> Result<(), String> {
   let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
 
-  let book = Book {
-    title: String::from(title),
-    author: String::from(author),
-    isbn: Uuid::new_v4().to_string(),
-  };
+  let book = Book::new(title, author);
 
   println!("Calling add with {} by {}", title, author);
   println!("Book: {} {} {}", book.title, book.author, book.isbn);
