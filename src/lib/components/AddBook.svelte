@@ -6,7 +6,7 @@
   let error: string | null;
 
   async function onSubmit(){
-    ({ error } = await addBook(title, author));
+    ({ error } = await addBook({ title, author }));
   }
 </script>
 

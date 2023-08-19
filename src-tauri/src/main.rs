@@ -13,6 +13,8 @@ mod models {
 
 use std::error::Error;
 
+use models::book::BookPartial;
+
 use crate::{database::start_db, services::books::BookService, models::book::Book};
 
 #[tokio::main]
@@ -46,15 +48,12 @@ async fn get_books() -> Result<Vec<Book>, String> {
 }
 
 #[tauri::command]
-async fn add_book(title: &str, author: &str) -> Result<(), String> {
+async fn add_book(book: BookPartial) -> Result<(), String> {
   let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
 
-  let book = Book::new(title, author);
+  let new_book = Book::new(book.title, book.author);
 
-  println!("Calling add with {} by {}", title, author);
-  println!("Book: {} {} {}", book.title, book.author, book.isbn);
-
-  match BookService::create(&book, &pool).await {
+  match BookService::create(&new_book, &pool).await {
     Ok(_) => Ok(()),
     Err(_) => Err(String::from("Could not add book"))
   }

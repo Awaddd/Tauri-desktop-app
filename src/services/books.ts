@@ -6,9 +6,6 @@ export const getBooks = async (): Promise<Result<Book[]>> => {
   return guard(async () => await invoke("get_books"));
 };
 
-export const addBook = async (
-  title: string,
-  author: string
-): Promise<Result> => {
-  return guard(async () => await invoke("add_book", { title, author }));
+export const addBook = async (book: BookPartial): Promise<Result> => {
+  return guard(async () => await invoke("add_book", { book }));
 };
