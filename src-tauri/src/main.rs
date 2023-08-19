@@ -50,21 +50,20 @@ async fn get_books() -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
-async fn add_book(book: &str) -> Result<(), String> {
+async fn add_book(title: &str, author: &str) -> Result<(), String> {
   let pool = start_db().await.map_err(|_| String::from("Failed to connect to database"))?;
 
-  let x = Book {
-    title: String::from(book),
-    author: String::from("Awaddd"),
+  let book = Book {
+    title: String::from(title),
+    author: String::from(author),
     isbn: Uuid::new_v4().to_string(),
   };
 
-  println!("Calling add with {}", book);
-  println!("Book: {} {} {}", x.title, x.author, x.isbn);
+  println!("Calling add with {} by {}", title, author);
+  println!("Book: {} {} {}", book.title, book.author, book.isbn);
 
-  match BookService::create(&x, &pool).await {
+  match BookService::create(&book, &pool).await {
     Ok(_) => Ok(()),
     Err(_) => Err(String::from("Could not add book"))
   }
-
 }
