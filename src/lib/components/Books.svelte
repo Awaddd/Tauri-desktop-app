@@ -8,6 +8,15 @@
   onMount(() => {
     async function load() {
       ({ data, error } = await getBooks());
+
+      let temp = [];
+
+      for (let i = 0; i < 5; i++) {
+        temp.push(data[i]);
+      }
+
+      temp.push(data[data.length - 1]);
+      data = temp;
     }
 
     load();
