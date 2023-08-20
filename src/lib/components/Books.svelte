@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { getBooks } from '../../services/books'
 
+  let loading = false;
   let data: Book[] = []
   let error: string;
 
@@ -17,8 +18,11 @@
 
       temp.push(data[data.length - 1]);
       data = temp;
+
+      loading = false;
     }
 
+    loading = true;
     load();
   })
 </script>
@@ -26,8 +30,12 @@
 <div>
   {#if data && data.length > 0}
     {#each data as book}
-      <li>{book.title} by {book.author} ({book.isbn})</li>
+      <li class="list-none text-center">{book.title} by {book.author} ({book.isbn})</li>
     {/each}
+  {/if}
+
+  {#if loading}
+    <p class="text-center">Loading...</p>
   {/if}
 
   {#if error}
