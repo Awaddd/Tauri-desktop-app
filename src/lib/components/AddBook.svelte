@@ -11,7 +11,7 @@
   }
 </script>
 
-<form class="grid gap-2 mx-auto" on:submit|preventDefault={onSubmit}>
+<form class="grid gap-2 mx-auto w-1/2 2xl:w-1/3" on:submit|preventDefault={onSubmit}>
   <input class="p-3 bg-zinc-800 rounded-sm placeholder-slate-100 font-medium text-sm" placeholder="Title" bind:value={title} />
   <input class="p-3 bg-zinc-800 rounded-sm placeholder-slate-100 font-medium text-sm" placeholder="Author" bind:value={author} />
   <Button size="lg" class="mt-2" type="submit">Add Book</Button>
